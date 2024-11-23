@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as core from '@actions/core'
 import { context } from '@actions/github'
 import { Octokit } from '@octokit/rest'
@@ -124,6 +125,7 @@ async function createRelease(octokit: Octokit, params: ReleaseParams) {
   })
 }
 
+ 
 function setOutputs(createReleaseResponse: any) {
   const {
     data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
