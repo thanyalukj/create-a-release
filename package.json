@@ -38,6 +38,13 @@
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
   },
   "license": "MIT",
+  "precommit": "lint-staged",
+  "lint-staged": {
+    "*.{js,ts}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "jest": {
     "preset": "ts-jest",
     "verbose": true,
