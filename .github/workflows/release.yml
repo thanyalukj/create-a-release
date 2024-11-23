@@ -26,7 +26,8 @@ jobs:
       - name: NPM List Dependencies
         id: list-dependencies
         run: |
-          echo "dependencies=$(json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//')" >> $GITHUB_OUTPUT
+          dependencies=$(json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//')
+          echo "dependencies=${dependencies}" >> "$GITHUB_OUTPUT"
 
       - name: Print Dependencies
         id: print-dependencies
