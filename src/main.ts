@@ -54,7 +54,6 @@ export async function run(): Promise<void> {
     core.setOutput('id', releaseId)
     core.setOutput('html_url', htmlUrl)
     core.setOutput('upload_url', uploadUrl)
-
   } catch (error) {
     handleError(error)
   }
