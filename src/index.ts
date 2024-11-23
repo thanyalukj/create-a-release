@@ -3,4 +3,8 @@
  */
 import { run } from './main'
 
-run()
+run().catch( error => {
+    console.error(error)
+    process.exit(1)
+})
+
