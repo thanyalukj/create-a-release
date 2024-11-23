@@ -24,7 +24,7 @@
     "node": ">=21"
   },
   "scripts": {
-    "bundle": "npm run format:write && npm run package",
+    "bundle": "npm run format:write && npm run package && npm run package-test-action",
     "ci-test": "npx jest",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
     "format:write": "npx prettier --write .",
@@ -32,11 +32,19 @@
     "lint": "npx eslint . -c ./.github/linters/eslint.config.mjs",
     "local-action": "npx local-action . src/main.ts .env",
     "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "package-test-action": "npx ncc build src/test-action/index.ts -o dist/test-action --source-map --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "npx jest",
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
   },
   "license": "MIT",
+  "precommit": "lint-staged",
+  "lint-staged": {
+    "*.{js,ts}": [
+      "prettier --check . --write",
+      "git add"
+    ]
+  },
   "jest": {
     "preset": "ts-jest",
     "verbose": true,

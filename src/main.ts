@@ -1,7 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as core from '@actions/core'
 import { context } from '@actions/github'
 import { Octokit } from '@octokit/rest'
 import * as fs from 'fs'
+
+interface ReleaseParams {
+  owner: string
+  repo: string
+  tag: string
+  releaseName: string
+  body: string
+  draft: boolean
+  prerelease: boolean
+  commitish: string
+  generate_release_notes: boolean
+  bodyFileContent: string | null
+}
 
 /**
  * The main function for the action.
@@ -22,19 +36,24 @@ export async function run(): Promise<void> {
       generate_release_notes,
       bodyFileContent
     } = getInputs()
-    const createReleaseResponse = await createRelease(octokit, {
+    const createReleaseResponse = await octokit.rest.repos.createRelease({
       owner,
       repo,
-      tag,
-      releaseName,
-      body,
+      tag_name: tag,
+      name: releaseName,
+      body: bodyFileContent || body,
       draft,
       prerelease,
-      commitish,
-      generate_release_notes,
-      bodyFileContent
+      target_commitish: commitish,
+      generate_release_notes: generate_release_notes
     })
-    setOutputs(createReleaseResponse)
+
+    const {
+      data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
+    } = createReleaseResponse
+    core.setOutput('id', releaseId)
+    core.setOutput('html_url', htmlUrl)
+    core.setOutput('upload_url', uploadUrl)
   } catch (error) {
     handleError(error)
   }
@@ -46,7 +65,7 @@ function getOctokit(): Octokit {
   })
 }
 
-function getInputs() {
+function getInputs(): ReleaseParams {
   const { owner: currentOwner, repo: currentRepo } = context.repo
   const tagName = core.getInput('tag_name', { required: true })
   const tag = tagName.replace('refs/tags/', '')
@@ -85,55 +104,7 @@ function getInputs() {
   }
 }
 
-interface ReleaseParams {
-  owner: string
-  repo: string
-  tag: string
-  releaseName: string
-  body: string
-  draft: boolean
-  prerelease: boolean
-  commitish: string
-  generate_release_notes: boolean
-  bodyFileContent: string | null
-}
-
-async function createRelease(octokit: Octokit, params: ReleaseParams) {
-  const {
-    owner,
-    repo,
-    tag,
-    releaseName,
-    body,
-    draft,
-    prerelease,
-    commitish,
-    generate_release_notes,
-    bodyFileContent
-  } = params
-  return await octokit.rest.repos.createRelease({
-    owner,
-    repo,
-    tag_name: tag,
-    name: releaseName,
-    body: bodyFileContent || body,
-    draft,
-    prerelease,
-    target_commitish: commitish,
-    generate_release_notes: generate_release_notes
-  })
-}
-
-function setOutputs(createReleaseResponse: any) {
-  const {
-    data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
-  } = createReleaseResponse
-  core.setOutput('id', releaseId)
-  core.setOutput('html_url', htmlUrl)
-  core.setOutput('upload_url', uploadUrl)
-}
-
-function handleError(error: any) {
+function handleError(error: any): void {
   if (error instanceof Error) {
     core.setFailed(error.message)
   } else {
