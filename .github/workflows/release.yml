@@ -26,12 +26,12 @@ jobs:
       - name: NPM List Dependencies
         id: list-dependencies
         run: |
-          echo "dependencies=$(json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//'))" >> $GITHUB_OUTPUT
+          json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//'))"
 
       - name: Print Dependencies
         id: print-dependencies
         run: |
-          echo "Dependencies: ${{ steps.list-dependencies.outputs.dependencies }}"
+          echo "Dependencies: ${{ steps.list-dependencies.outputs }}"
 
       - name: Create Release
         id: create_release
@@ -50,7 +50,7 @@ jobs:
             ### Bug fixes:
               - bug1
             ### Depedencies:
-              - ${{ steps.list-dependencies.outputs.dependencies }}
+              - ${{ steps.list-dependencies.outputs }}
           draft: false
           prerelease: false
           generate_release_notes: true
