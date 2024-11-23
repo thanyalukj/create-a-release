@@ -125,7 +125,6 @@ async function createRelease(octokit: Octokit, params: ReleaseParams) {
   })
 }
 
- 
 function setOutputs(createReleaseResponse: any) {
   const {
     data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
