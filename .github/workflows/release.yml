@@ -11,9 +11,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Print Tag Name
-        id: tag_name_output
-        run: echo "TAG_NAME = ${{ github.ref }}"
+      
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: NPM Install Json
+        id: install-json
+        run: npm i -g json
+      
+      - name: NPM List Dependencies
+        id: list-dependencies
+        run: |
+          json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//'
+
+      - name: Print Dependencies
+        id: print-dependencies
+        run: |
+          echo "::debug::Dependencies: ${{ steps.list-dependencies.outputs.stdout }}"
+          echo "dependencies=${{ steps.list-dependencies.outputs.stdout }}" >> "$GITHUB_OUTPUT"
+
       - name: Create Release
         id: create_release
         uses: ./
@@ -21,11 +41,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ github.ref }}
           body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+            ## ChangeLog            
+            ### Added:              
+              - feature1
+            ### Improvements:
+              - improve1
+            ### Bug fixes:
+              - bug1
+            ### Depedencies:
+              - ${{ steps.print-dependencies.outputs.dependencies }}
           draft: false
           prerelease: false
           generate_release_notes: true
