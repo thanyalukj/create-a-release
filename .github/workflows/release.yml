@@ -31,7 +31,7 @@ jobs:
       - name: Print Dependencies
         id: print-dependencies
         run: |
-          echo "Dependencies: ${{ steps.list-dependencies.outputs }}"
+          echo "Dependencies: ${{ toJson(steps.list-dependencies.outputs) }}"
 
       - name: Create Release
         id: create_release
