@@ -1,5 +1,5 @@
-name: 'Create a Release for a Tag'
-description: 'Create a Release for a Tag'
+name: 'Test an Action'
+description: 'Test an Action'
 author: 'Thanyaluk Jirapech-umpai'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
@@ -21,4 +21,4 @@ outputs:
 
 runs:
   using: node20
-  main: dist/local.js
+  main: ../dist/index.js
