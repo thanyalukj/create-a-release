@@ -104,7 +104,7 @@ function getInputs(): ReleaseParams {
   }
 }
 
-function handleError(error: any) {
+function handleError(error: any): void {
   if (error instanceof Error) {
     core.setFailed(error.message)
   } else {
