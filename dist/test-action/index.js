@@ -27604,7 +27604,10 @@ function run() {
  * The entrypoint for the test action.
  */
 
-run();
+run().catch(error => {
+    console.error(error);
+    process.exit(1);
+});
 
 })();
 

@@ -35467,7 +35467,10 @@ function handleError(error) {
  * The entrypoint for the action.
  */
 
-run();
+run().catch(error => {
+    console.error(error);
+    process.exit(1);
+});
 
 })();
 
