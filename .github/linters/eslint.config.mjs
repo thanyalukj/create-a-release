@@ -49,6 +49,7 @@ export default [{
             parser: tsParser,
             ecmaVersion: 2023,
             sourceType: "module",
+            warnOnUnsupportedTypeScriptVersion: false,
             project: ["./.github/linters/tsconfig.json", "./tsconfig.json"],
         },
     },
