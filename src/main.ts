@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { context } from '@actions/github'
 import { Octokit } from '@octokit/rest'
-import * as fs from 'fs';
+import * as fs from 'fs'
 
 /**
  * The main function for the action.
@@ -9,60 +9,108 @@ import * as fs from 'fs';
  */
 export async function run(): Promise<void> {
   try {
-    const octokit = getOctokit();
-    const { owner, repo, tag, releaseName, body, draft, prerelease, commitish, generate_release_notes, bodyFileContent } = getInputs();
-    const createReleaseResponse = await createRelease(octokit, { owner, repo, tag, releaseName, body, draft, prerelease, commitish, generate_release_notes, bodyFileContent });
-    setOutputs(createReleaseResponse);
+    const octokit = getOctokit()
+    const {
+      owner,
+      repo,
+      tag,
+      releaseName,
+      body,
+      draft,
+      prerelease,
+      commitish,
+      generate_release_notes,
+      bodyFileContent
+    } = getInputs()
+    const createReleaseResponse = await createRelease(octokit, {
+      owner,
+      repo,
+      tag,
+      releaseName,
+      body,
+      draft,
+      prerelease,
+      commitish,
+      generate_release_notes,
+      bodyFileContent
+    })
+    setOutputs(createReleaseResponse)
   } catch (error) {
-    handleError(error);
+    handleError(error)
   }
 }
 
 function getOctokit(): Octokit {
   return new Octokit({
-    auth: `token ${process.env.GITHUB_TOKEN}`,
-  });
+    auth: `token ${process.env.GITHUB_TOKEN}`
+  })
 }
 
 function getInputs() {
-  const { owner: currentOwner, repo: currentRepo } = context.repo;
-  const tagName = core.getInput('tag_name', { required: true });
-  const tag = tagName.replace('refs/tags/', '');
-  const releaseName = core.getInput('release_name', { required: false }).replace('refs/tags/', '');
-  const body = core.getInput('body', { required: false });
-  const draft = 'true' === core.getInput('draft', { required: false });
-  const prerelease = 'true' === core.getInput('prerelease', { required: false });
-  const commitish = core.getInput('commitish', { required: false }) || context.sha;
-  const bodyPath = core.getInput('body_path', { required: false });
-  const generate_release_notes = 'true' === core.getInput('generate_release_notes', { required: false });
-  const owner = core.getInput('owner', { required: false }) || currentOwner;
-  const repo = core.getInput('repo', { required: false }) || currentRepo;
-  let bodyFileContent = null;
+  const { owner: currentOwner, repo: currentRepo } = context.repo
+  const tagName = core.getInput('tag_name', { required: true })
+  const tag = tagName.replace('refs/tags/', '')
+  const releaseName = core
+    .getInput('release_name', { required: false })
+    .replace('refs/tags/', '')
+  const body = core.getInput('body', { required: false })
+  const draft = 'true' === core.getInput('draft', { required: false })
+  const prerelease = 'true' === core.getInput('prerelease', { required: false })
+  const commitish =
+    core.getInput('commitish', { required: false }) || context.sha
+  const bodyPath = core.getInput('body_path', { required: false })
+  const generate_release_notes =
+    'true' === core.getInput('generate_release_notes', { required: false })
+  const owner = core.getInput('owner', { required: false }) || currentOwner
+  const repo = core.getInput('repo', { required: false }) || currentRepo
+  let bodyFileContent = null
   if ('' !== bodyPath && !!bodyPath) {
     try {
-      bodyFileContent = fs.readFileSync(bodyPath, { encoding: 'utf8' });
+      bodyFileContent = fs.readFileSync(bodyPath, { encoding: 'utf8' })
     } catch (error) {
-      handleError(error);
+      handleError(error)
     }
   }
-  return { owner, repo, tag, releaseName, body, draft, prerelease, commitish, generate_release_notes, bodyFileContent };
+  return {
+    owner,
+    repo,
+    tag,
+    releaseName,
+    body,
+    draft,
+    prerelease,
+    commitish,
+    generate_release_notes,
+    bodyFileContent
+  }
 }
 
 interface ReleaseParams {
-  owner: string;
-  repo: string;
-  tag: string;
-  releaseName: string;
-  body: string;
-  draft: boolean;
-  prerelease: boolean;
-  commitish: string;
-  generate_release_notes: boolean;
-  bodyFileContent: string | null;
+  owner: string
+  repo: string
+  tag: string
+  releaseName: string
+  body: string
+  draft: boolean
+  prerelease: boolean
+  commitish: string
+  generate_release_notes: boolean
+  bodyFileContent: string | null
 }
 
 async function createRelease(octokit: Octokit, params: ReleaseParams) {
-  const { owner, repo, tag, releaseName, body, draft, prerelease, commitish, generate_release_notes, bodyFileContent } = params;
+  const {
+    owner,
+    repo,
+    tag,
+    releaseName,
+    body,
+    draft,
+    prerelease,
+    commitish,
+    generate_release_notes,
+    bodyFileContent
+  } = params
   return await octokit.rest.repos.createRelease({
     owner,
     repo,
@@ -72,21 +120,23 @@ async function createRelease(octokit: Octokit, params: ReleaseParams) {
     draft,
     prerelease,
     target_commitish: commitish,
-    generate_release_notes: generate_release_notes,
-  });
+    generate_release_notes: generate_release_notes
+  })
 }
 
 function setOutputs(createReleaseResponse: any) {
-  const { data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl } } = createReleaseResponse;
-  core.setOutput('id', releaseId);
-  core.setOutput('html_url', htmlUrl);
-  core.setOutput('upload_url', uploadUrl);
+  const {
+    data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
+  } = createReleaseResponse
+  core.setOutput('id', releaseId)
+  core.setOutput('html_url', htmlUrl)
+  core.setOutput('upload_url', uploadUrl)
 }
 
 function handleError(error: any) {
   if (error instanceof Error) {
-    core.setFailed(error.message);
+    core.setFailed(error.message)
   } else {
-    core.setFailed(String(error));
+    core.setFailed(String(error))
   }
 }
