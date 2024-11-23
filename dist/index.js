@@ -35391,19 +35391,21 @@ function run() {
         try {
             const octokit = getOctokit();
             const { owner, repo, tag, releaseName, body, draft, prerelease, commitish, generate_release_notes, bodyFileContent } = getInputs();
-            const createReleaseResponse = yield createRelease(octokit, {
+            const createReleaseResponse = yield octokit.rest.repos.createRelease({
                 owner,
                 repo,
-                tag,
-                releaseName,
-                body,
+                tag_name: tag,
+                name: releaseName,
+                body: bodyFileContent || body,
                 draft,
                 prerelease,
-                commitish,
-                generate_release_notes,
-                bodyFileContent
+                target_commitish: commitish,
+                generate_release_notes: generate_release_notes
             });
-            setOutputs(createReleaseResponse);
+            const { data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl } } = createReleaseResponse;
+            core.setOutput('id', releaseId);
+            core.setOutput('html_url', htmlUrl);
+            core.setOutput('upload_url', uploadUrl);
         }
         catch (error) {
             handleError(error);
@@ -35450,28 +35452,6 @@ function getInputs() {
         generate_release_notes,
         bodyFileContent
     };
-}
-function createRelease(octokit, params) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { owner, repo, tag, releaseName, body, draft, prerelease, commitish, generate_release_notes, bodyFileContent } = params;
-        return yield octokit.rest.repos.createRelease({
-            owner,
-            repo,
-            tag_name: tag,
-            name: releaseName,
-            body: bodyFileContent || body,
-            draft,
-            prerelease,
-            target_commitish: commitish,
-            generate_release_notes: generate_release_notes
-        });
-    });
-}
-function setOutputs(createReleaseResponse) {
-    const { data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl } } = createReleaseResponse;
-    core.setOutput('id', releaseId);
-    core.setOutput('html_url', htmlUrl);
-    core.setOutput('upload_url', uploadUrl);
 }
 function handleError(error) {
     if (error instanceof Error) {
