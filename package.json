@@ -32,7 +32,7 @@
     "lint": "npx eslint . -c ./.github/linters/eslint.config.mjs",
     "local-action": "npx local-action . src/main.ts .env",
     "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
-    "package-test-action": "npx ncc build src/test-actoin/index.ts -o dist/test-action --source-map --license licenses.txt",
+    "package-test-action": "npx ncc build src/test-action/index.ts -o dist/test-action --source-map --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "npx jest",
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
