@@ -47,7 +47,14 @@ export async function run(): Promise<void> {
       target_commitish: commitish,
       generate_release_notes: generate_release_notes
     })
-    setOutputs(createReleaseResponse)
+
+    const {
+      data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
+    } = createReleaseResponse
+    core.setOutput('id', releaseId)
+    core.setOutput('html_url', htmlUrl)
+    core.setOutput('upload_url', uploadUrl)
+
   } catch (error) {
     handleError(error)
   }
@@ -96,15 +103,6 @@ function getInputs(): ReleaseParams {
     generate_release_notes,
     bodyFileContent
   }
-}
-
-function setOutputs(createReleaseResponse: any) {
-  const {
-    data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
-  } = createReleaseResponse
-  core.setOutput('id', releaseId)
-  core.setOutput('html_url', htmlUrl)
-  core.setOutput('upload_url', uploadUrl)
 }
 
 function handleError(error: any) {
