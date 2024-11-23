@@ -3,4 +3,4 @@
  */
 import { run } from './test-action'
 
-run()
+void run()
