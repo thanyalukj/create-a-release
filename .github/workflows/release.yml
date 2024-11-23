@@ -26,7 +26,7 @@ jobs:
       - name: NPM List Dependencies
         id: list-dependencies
         run: |
-          json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//'))"
+          json dependencies -a < package.json | grep : | sed 's/^ *//;s/"//g;s/: /@/;s/,$//'
 
       - name: Print Dependencies
         id: print-dependencies
